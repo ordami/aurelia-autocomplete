@@ -242,20 +242,27 @@ define(["exports", "aurelia-framework", "aurelia-api", "../aurelia-autocomplete"
       this.justSelected = true;
       this.value = this.label(result);
       this.previousValue = this.value;
+      this.selected = result;
       this.result = result;
-      this.selected = this.result;
 
       this.setFocus(false);
 
       return true;
     };
 
+    AutoCompleteCustomElement.prototype.resultChanged = function resultChanged() {
+      if (this.selected != this.result) {
+        this.onSelect(this.result);
+      }
+    };
+
     AutoCompleteCustomElement.prototype.valueChanged = function valueChanged() {
       var _this = this;
 
+      var initial = this.initial;
       if (!this.shouldPerformRequest()) {
         this.previousValue = this.value;
-        this.hasFocus = !(this.results.length === 0);
+        this.hasFocus = !initial && !(this.results.length === 0);
 
         return Promise.resolve();
       }
@@ -325,7 +332,7 @@ define(["exports", "aurelia-framework", "aurelia-api", "../aurelia-autocomplete"
       if (this.initial) {
         this.initial = false;
 
-        return true;
+        return false;
       }
 
       return this.value !== this.previousValue;

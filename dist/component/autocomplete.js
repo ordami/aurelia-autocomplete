@@ -261,12 +261,18 @@ export class AutoCompleteCustomElement {
     this.justSelected  = true;
     this.value         = this.label(result);
     this.previousValue = this.value;
+    this.selected      = result;
     this.result        = result;
-    this.selected      = this.result;
 
     this.setFocus(false);
 
     return true;
+  }
+
+  resultChanged() {
+    if (this.selected != this.result) {
+      this.onSelect(this.result);
+    }
   }
 
   /**
@@ -276,9 +282,10 @@ export class AutoCompleteCustomElement {
    * @returns {Promise}
    */
   valueChanged() {
+    let initial = this.initial;
     if (!this.shouldPerformRequest()) {
       this.previousValue = this.value;
-      this.hasFocus = !(this.results.length === 0);
+      this.hasFocus = !initial && !(this.results.length === 0);
 
       return Promise.resolve();
     }
@@ -375,7 +382,7 @@ export class AutoCompleteCustomElement {
     if (this.initial) {
       this.initial = false;
 
-      return true;
+      return false;
     }
 
     return this.value !== this.previousValue;
